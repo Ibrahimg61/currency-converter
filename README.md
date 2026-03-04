@@ -1,2 +1,0 @@
-# W-hungsumrechner
-Tagesaktueller Währungsumrechner
