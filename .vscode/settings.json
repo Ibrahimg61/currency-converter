@@ -1,0 +1,10 @@
+{
+  "java.project.sourcePaths": [
+    "Waerungsumrechner/src",
+    "Currency_Converter/src"
+  ],
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    "Waehungsumrechner/lib/**/*.jar"
+  ]
+}
