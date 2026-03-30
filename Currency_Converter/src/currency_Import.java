@@ -5,14 +5,19 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+
 import org.json.JSONObject;
 
 public class currency_Import {
     public static void main(String[] args) throws Exception {
         
         String jsonUrl = "https://open.er-api.com/v6/latest/EUR";
+        Path historyFile = Paths.get("currency_history.json");
 
         try {
+            String heute = LocalDate.now().toString();
+
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(jsonUrl))
@@ -31,12 +36,20 @@ public class currency_Import {
             JSONObject jsonDaten = new JSONObject(responseBody);
             JSONObject rates = jsonDaten.getJSONObject("rates");
 
+            JSONObject historyData;
+            if (Files.exists(historyFile)) {
+                // Datei existiert -> Inhalt einlesen
+                String vorhandenerInhalt = Files.readString(historyFile);
+                historyData = new JSONObject(vorhandenerInhalt);
+            } else {
+                // Datei existiert noch nicht -> leeres Objekt erstellen
+                historyData = new JSONObject();
+            }
 
-            double usdKurs = rates.getDouble("USD");
-            System.out.println("Der aktuelle Kurs für 1 EUR in USD ist: " + usdKurs);
+            historyData.put(heute, rates);
 
-            double chfKurs = rates.getDouble("CHF"); 
-            System.out.println("Der aktuelle Kurs für 1 EUR in CHF ist: " + chfKurs);
+            Files.writeString(historyFile, historyData.toString(4));
+            System.out.println("Erfolg! Die Kurse für den " + heute + " wurden in der Historie gespeichert.");
             
         } catch (Exception e) {
             e.printStackTrace();
