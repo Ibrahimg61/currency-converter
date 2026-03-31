@@ -38,11 +38,9 @@ public class currency_Import {
 
             JSONObject historyData;
             if (Files.exists(historyFile)) {
-                // Datei existiert -> Inhalt einlesen
                 String vorhandenerInhalt = Files.readString(historyFile);
                 historyData = new JSONObject(vorhandenerInhalt);
             } else {
-                // Datei existiert noch nicht -> leeres Objekt erstellen
                 historyData = new JSONObject();
             }
 
