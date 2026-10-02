@@ -1,56 +1,65 @@
-# Währungsumrechner
+# RateShift
 
-Java-Swing-Programm zum Umrechnen von Währungen mit Live-Kursen von
-[open.er-api.com](https://open.er-api.com/v6/latest/EUR) (Basis EUR, ca. 160 Währungen).
+Java Swing currency converter with live exchange rates from
+[open.er-api.com](https://open.er-api.com/v6/latest/EUR) (base EUR, about 160 currencies).
 
-## Funktionen
+## Features
 
-- Live-Kurse beim Start und per Button „Aktualisieren“
-- Offline-Fallback auf die zuletzt geladenen Kurse
-- Tageskurse werden als Historie gespeichert; daraus entsteht ein Verlaufsdiagramm je Währungspaar
-- Währungen tauschen, Ergebnis kopieren, Eingabe mit `,` oder `.` (`1.234,56` und `1,234.56` funktionieren)
-- Tippen in der Auswahlliste springt zur Währung (z. B. `US` → USD)
+- Live rates on startup and via the "Refresh" button
+- Offline fallback to the last fetched rates
+- Daily rates are stored as a history, which feeds a line chart for each currency pair
+- Swap currencies, copy the result, enter amounts with `,` or `.` (both `1,234.56` and `1.234,56` work)
+- Typing in the currency list jumps to a currency (e.g. `US` → USD)
 
-## Voraussetzungen
+## Requirements
 
-Nur ein JDK ab Version 21. Maven muss nicht installiert sein, der Maven Wrapper lädt es selbst.
+Only a JDK 21 or newer. Maven does not need to be installed, the Maven Wrapper downloads it.
 
-## Bauen und starten
+## Build and run
 
 ```bash
-./mvnw verify                          # kompilieren, Tests ausführen, Jar bauen
-java -jar target/waehrungsumrechner.jar
+./mvnw verify                  # compile, run tests, build the jar
+java -jar target/rateshift.jar
 ```
 
-Nur testen: `./mvnw test`. In VS Code oder IntelliJ das Projekt als Maven-Projekt öffnen und
-`de.waehrungsumrechner.Main` starten.
+Tests only: `./mvnw test`. In VS Code or IntelliJ, open the project as a Maven project and run
+`rateshift.Main`.
 
-## Daten
+## Data and privacy
 
-Kurse und Historie liegen außerhalb des Repos in `~/.waehrungsumrechner/`
-(`latest.json` und `history.json`). Anderer Ort: `java -Dwaehrungsumrechner.data=/pfad -jar …`
+Rates and history are stored outside the repository in `~/.rateshift/`
+(`latest.json` and `history.json`). Use a different location with
+`java -Drateshift.data=/path -jar …`
 
-## Aufbau
+The only network request is an anonymous `GET` to `open.er-api.com`. No API key, account or
+personal data is involved, but the server naturally sees your IP address.
+
+## Project layout
 
 ```
-src/main/java/de/waehrungsumrechner/
-├── Main.java                 Einstiegspunkt, verdrahtet die Teile
-├── model/                    reine Datentypen und Rechenlogik, kein I/O
-│   ├── ExchangeRates         Kurse eines Tages, Umrechnung
-│   ├── RateHistory           Tageskurse, Verlauf je Währungspaar
-│   └── CurrencyInfo          Code + deutscher Name
-├── data/                     Kursquelle und Speicherung
-│   ├── RateSource            Schnittstelle der Kursquelle
-│   ├── HttpRateSource        Abruf per HTTP
+src/main/java/rateshift/
+├── Main.java                 entry point, wires the parts together
+├── model/                    plain data types and calculation logic, no I/O
+│   ├── ExchangeRates         rates of one day, conversion
+│   ├── RateHistory           daily rates, series per currency pair
+│   └── CurrencyInfo          code + English name
+├── data/                     rate source and storage
+│   ├── RateSource            interface of the rate source
+│   ├── HttpRateSource        fetches rates over HTTP
 │   ├── ExchangeRateParser    JSON → ExchangeRates
-│   └── RateStore             latest.json und history.json
+│   └── RateStore             latest.json and history.json
 ├── service/
-│   └── ExchangeRateService   laden, speichern, Cache-Fallback
-├── format/                   Eingabe lesen, Ausgabe formatieren (Deutsch)
-└── ui/                       Swing-Oberfläche
+│   └── ExchangeRateService   load, save, fall back to the cache
+├── format/                   parse input, format output (English)
+└── ui/                       Swing user interface
     ├── MainWindow, ResultCard, HistoryCard, Theme
-    └── component/            wiederverwendbare Bausteine (Card, FlatButton, CurrencyComboBox …)
+    └── component/            reusable building blocks (Card, FlatButton, CurrencyComboBox …)
 ```
 
-Abhängigkeiten zeigen nur nach unten: `ui` → `service` → `data` → `model`. Die Tests in
-`src/test/java` decken Modell, Parser, Speicher, Service und Eingabe-/Ausgabeformat ab.
+Dependencies only point downwards: `ui` → `service` → `data` → `model`. The tests in
+`src/test/java` cover the model, parser, storage, service and input/output formatting.
+
+## Credits
+
+Exchange rates by [Exchange Rate API](https://www.exchangerate-api.com)
+(free endpoint `open.er-api.com`).
