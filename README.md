@@ -59,6 +59,10 @@ src/main/java/rateshift/
 Dependencies only point downwards: `ui` → `service` → `data` → `model`. The tests in
 `src/test/java` cover the model, parser, storage, service and input/output formatting.
 
+## License
+
+Released under the [MIT License](LICENSE).
+
 ## Credits
 
 Exchange rates by [Exchange Rate API](https://www.exchangerate-api.com)
